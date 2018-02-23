@@ -18,7 +18,7 @@ public:
 	ofxVezerRealtime();
 	void setup(string vezerIp, int vezerOSCinPort, int vezierFeedbackOutPort);
 
-	void update();
+	void update(bool printUnknownMessages = false);
 
 	//control composition playhead
 	void setPlayheadNormalized(float timelinePct, const string & composition = "current");
@@ -47,6 +47,8 @@ public:
 	//these need OSC feedback enabled in Vezér - using the "vezerOscOutPort" OSC output in Vezér
 
 	ofFastEvent<float> eventPlayHeadUpdated;
+
+	std::function<void(bool)> playStateChangedFunc = nullptr;
 
 	//ofFastEvent<string> eventCompositionSelected;
 

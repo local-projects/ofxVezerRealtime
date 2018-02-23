@@ -17,22 +17,28 @@ void ofxVezerRealtime::setup(string vezerIp, int vezerOscInPort, int vezierFeedb
 	rx.setup(vezierFeedbackOutPort);
 }
 
-void ofxVezerRealtime::update(){
+void ofxVezerRealtime::update(bool printUnknownMessages){
 
 	while(rx.hasWaitingMessages()){
 		ofxOscMessage m;
 		rx.getNextMessage(m);
-		if(m.getAddress() == "/vezer/current/playhead"){
+		string address = m.getAddress();
+		if(address == "/vezer/current/playhead"){
 			float time = m.getArgAsFloat(0);
 			ofNotifyEvent(eventPlayHeadUpdated, time, this);
+		}else if(address == "/vezer/current/play"){
+			bool playing = m.getArgAsInt(0) == 1;
+			if(playStateChangedFunc) playStateChangedFunc(playing);
 		}else{
-			//ofLogNotice() << "Unknown msg from Vezér: \"" << m.getAddress() << "\"";
+			if(printUnknownMessages){
+				ofLogNotice("ofxVezerRealtime") << "Unknown msg from Vezér: \"" << m.getAddress() << "\"";
+			}
 		}
 	}
 
-	ofxOscMessage m;
-	m.setAddress("/vezer/currentcompinfo");
-	sender.sendMessage(m);
+//	ofxOscMessage m;
+//	m.setAddress("/vezer/currentcompinfo");
+//	sender.sendMessage(m);
 }
 
 //control playhead
